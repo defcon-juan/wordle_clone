@@ -1,7 +1,15 @@
-# RockPaperScissors.py
+# rock_paper_scissors_lizard_spock.py
 
 import random
 from enum import IntEnum
+
+wins = 0
+
+losses = 0
+
+draws = 0
+
+win_rate_percent = 0
 
 
 class Choice(IntEnum):
@@ -47,39 +55,63 @@ MESSAGES = {
     (Choice.Paper, Choice.Rock): "covers",
     (Choice.Scissors, Choice.Paper): "cuts",
     (Choice.Scissors, Choice.Lizard): "decapitates",
-    (Choice.Spock, Choice.Spock): "smashes",
+    (Choice.Spock, Choice.Scissors): "smashes",
     (Choice.Spock, Choice.Rock): "vapourises",
 }
 
 
 def show_winner(user_choice, computer_choice):
     if user_choice == computer_choice:
-        print(f"It's a tie! Both users chose '{user_choice.name.lower()}'")
+        if user_choice == 4:
+            print(
+                f"\nIt's a draw! Both players chose {user_choice.name}"
+            )  # logic for capitalising spocks name
+
+        else:
+            print(f"\nIt's a draw! Both players chose {user_choice.name.lower()}")
+
     else:
-        # Beats[user_choice] is the list of throws that will trigger a win condition for user
+        # If the computer choice is a value based on the user_choice key, the user wins
         user_wins = computer_choice in BEATS[user_choice]
 
         if user_wins:
+            # access the messages dictionary with the tuple of user choice and computer choice as a key
+            # the value of that key is then used as the verb in the message to the user
             verb = MESSAGES[(user_choice, computer_choice)]
             if computer_choice == 4:
-                print(f"{user_choice.name} {verb} {computer_choice.name}, you win!")
+                print(
+                    f"\n{user_choice.name} {verb} {computer_choice.name}, you win!"
+                )  # logic for capitalising spocks name
             else:
                 print(
-                    f"{user_choice.name} {verb} {computer_choice.name.lower()}, you win!"
+                    f"\n{user_choice.name} {verb} {computer_choice.name.lower()}, you win!"
                 )
 
         else:
             verb = MESSAGES[(computer_choice, user_choice)]
             if user_choice == 4:
-                print(f"{computer_choice.name} {verb} {user_choice.name}, you loose!")
+                print(
+                    f"\n{computer_choice.name} {verb} {user_choice.name}, you lose!"
+                )  # logic for capitalising spocks name
             else:
                 print(
-                    f"{computer_choice.name} {verb} {user_choice.name.lower()}, you loose!"
+                    f"\n{computer_choice.name} {verb} {user_choice.name.lower()}, you lose!"
                 )
 
 
 while True:
-    print("Make your throw")
+    # display the wins, losses, draws and win rate to the user
+    print(
+        "\n"
+        + str(wins)
+        + "  Wins ||  "
+        + str(losses)
+        + "  Losses ||  "
+        + str(draws)
+        + "  Draws ||  "
+        + f"Win rate = {win_rate_percent}%  \n"
+    )
+    print("Make your throw\n")
     try:
         value = input(f"  Enter a choice ({CHOICES_STR}): ")
         user_choice = Choice(int(value))
@@ -91,10 +123,24 @@ while True:
     computer_choice = Choice(value)
     show_winner(user_choice, computer_choice)
 
+    # Logic for wins draws and losses
+
+    if user_choice == computer_choice:
+        draws += 1
+    else:
+        win_condition = computer_choice in BEATS[user_choice]
+        if win_condition:
+            wins += 1
+        else:
+            losses += 1
+    # calculate win percentage to 2 decimal places
+
+    win_rate_percent = round(((wins / (wins + losses + draws)) * 100), 2)
+
     again = input("\nWant some more? (y/n): ")
     if again.lower() == "n":
         break
 
     print()
 
-print("\nGoodbye and thanks for playing!!")
+print("\nGoodbye and thanks for playing!!\n")
