@@ -4,22 +4,37 @@ import pathlib
 import random
 from string import ascii_letters
 
-WORDLIST = pathlib.Path("wordlist.txt")
 
-words = [
-    word.upper()
-    for word in WORDLIST.read_text(encoding="utf-8").split("\n")
-    if len(word) == 5 and all(letter in ascii_letters for letter in word)
-]
+def main():
+    # pre-process - everything before main loop runs
+    word = get_random_word()
 
-word = random.choice(words)
+    # process (main loop)
+    for guess_num in range(1, 7):
+        guess = input(f"\nGuess {guess_num}: ").upper()
+
+        show_guess(guess, word)
+        if guess == word:
+            break
+
+    # post-process - clean up after main loop
+    else:
+        game_over(word)
 
 
-for guess_num in range(1, 7):
-    guess = input("Guess a word: ").upper()
-    if guess == word:
-        print("Correct")
-        break
+def get_random_word():
+    wordlist = pathlib.Path(__file__).parent / "wordlist.txt"
+
+    words = [
+        word.upper()
+        for word in wordlist.read_text(encoding="utf-8").split("\n")
+        if len(word) == 5 and all(letter in ascii_letters for letter in word)
+    ]
+
+    return random.choice(words)
+
+
+def show_guess(guess, word):
     # using set comprehension to organise letters
     # newSet= { expression for element in  iterable if condition}
 
@@ -41,6 +56,11 @@ for guess_num in range(1, 7):
     print("Correct letters:", ", ".join(sorted(correct_letters)))
     print("Misplaced letters:", ", ".join(sorted(misplaced_letters)))
     print("Wrong letters:", ", ".join(sorted(wrong_letters)))
-    print("\n")
-else:
-    print(f"The word was {word}")
+
+
+def game_over(word):
+    print(f"THe word was {word}")
+
+
+if __name__ == "__main__":
+    main()
